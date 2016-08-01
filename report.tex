@@ -88,6 +88,8 @@
 \usepackage{amsmath,amssymb,amstext} % Lots of math symbols and environments
 \usepackage[pdftex]{graphicx} % For including graphics N.B. pdftex graphics driver 
 
+\usepackage[chapter]{algorithm}
+\usepackage{algorithmic}
 % Hyperlinks make it very easy to navigate an electronic document.
 % In addition, this is where you should specify the thesis title
 % and author as they appear in the properties of the PDF document.
@@ -193,85 +195,137 @@
 % do not contain \documentclass or \begin{document} and \end{document} commands.
 %======================================================================
 \chapter{Introduction}
-%======================================================================
-In the beginning there was $\pi$:
+Artificial intelligence (or machine learning as it can be called) is a thriving field that applies intelligent algorithms to difficult problems and automate tasks. Early on, these problems were those that were difficult for humans but easy for machines. Now there has been a trend of having computers automate very human tasks that were previously deemed impossible for computers \cite{deep-learning-book}. Computer vision is in line with this train of thought and deals with teaching computers to recognize and understand visuals. Visual object tracking, the question put forth here, is a computer vision task that aims to track a visual object over time (e.g. in a video). This difficult task has had great breakthroughs recently, due to the effectiveness of deep neural networks. This report explores using deep neural networks in intelligent ways to solve the task.
+
+\chapter{Background Information}
+\section{Deep Neural Networks}
+The basis of deep learning, the technology used, is neural networks. These are architectures that ``learn to map a fixed-size input (for example, an image) to a fixed-size output (for example, a probability for each of several categories)'' \cite{deep-learning-article}. They do so by having ``layers'' of neurons where each neuron is a function on its input (usually the output of the previous layer). By feeding forward the inputs through many layers, complex features can be extracted by the network using interesting combinations of neurons. 
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.3]{neural_net}
+	\caption{basic example of a neural network \cite{cs231n}}
+\end{figure}
+
+By using the property that complex features tend to be built on top of simple features (e.g. using lines to form shapes), we find that having many layers of neurons allow us to learn to disinguish more and more complex features at the deeper layers \cite{deep-learning-article}. This idea, that complex features learned as a deeper layer of simple features, forms the basis for our approach to visual classification. 
+
+\section{Convolutional Neural Networks}
+Just using normal neurons in combination is an effective but expensive strategy for images. If each neuron has a function that uses one weight variable per input (e.g. output is some weighted sum of inputs) then we can quickly get overwhelmed. For example, if we have a \textit{fully connected} layer where each neuron is connected to each input, then for an image of a measly size of 32 pixels wide x 32 pixels tall x 3 colour channels (RGB), we already have 3072 weights in every input neuron! This is a very small image and more weights means more difficulty to train as well as overfitting. To this end, we use \textit{convolutional} layers to decrease the number of parameters (weights) while still processing the input. 
+
+
+Based on the concept of a ``sliding window'' that slides over a whole image, we create a \textit{filter} that will be our sliding window and assign it only as many weights as it needs (5x5 filter $\rightarrow$ 5x5x3 (RGB) = 75 weights). We then use this filter over the whole image and thus save on parameters \cite{cs231n}. We also get the benefit of locality since our window looks at groups of pixels at a time. This means that it doesn't matter where in the image our pixels are, as long as our sliding window passes over them it acts as the same input, meaning we have translational invariance.
+
+\begin{figure}[b]
+	\centering
+	\includegraphics[scale=0.3]{conv}
+	\caption{basic example of a convolutional network \cite{cs231n}}
+\end{figure}
+
+These benefits, among others, mean that convolutional neural networks are excellent for processing images and indeed are the basis of the state of the art image object classification, video object classification, scene classification, and more \cite{ILSVRC15} \cite{resnet}.
+
+
+\section{Reinforcement Learning}
+This research also makes use of another large field in machine learning, reinforcement learning. ``Reinforcement learning is learning what to do--how to map situations to actions--so as to maximize a numerical reward signal.'' \cite{sutton-barto} We start by modelling situations as Markov decision processes, where we specify each component of a task by modelling everything including uncertainty. We can say that a task is at a current state $s$ that is one of the possible states in the state space $S$. As well, we can take an action $a$ from this state (part of action space $A$) and recieve a reward for this action $r$ \cite{pascal-mdp}.
+
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=1.0]{mdp}
+	\caption{graphical model representation of an mdp\cite{pascal-mdp}}
+\end{figure}
+
+We can also add the horizon $h$ which specifies how far into the future out agent should plan, and the discount factor $\gamma$ which determines how to weigh rewards at different steps in time, specifically, how the rewards decrease at later time steps.
+
+
+Reinforcement learning deals with finding a policy $\pi$ that will maximize our reward by choosing an action at every time step, which ends up being maximizing the ``expected sum of discounted rewards earned while executing the policy'' \cite{pascal-mdp}, for a value function $V^\pi(s)$
 
 \begin{equation}
-   e^{\pi i} + 1 = 0  \label{eqn_pi}
+	V^\pi(s) = \sum_{t=0}^{\infty} \gamma^{t}E_{\pi}[R(s_t, \pi(s_t))] \forall s
 \end{equation}
 
-%----------------------------------------------------------------------
-\section{State of the Art}
-%----------------------------------------------------------------------
+rewriting the value function to be recursive as the sum of the current reward and discounted future rewards
 
-See equation \ref{eqn_pi} on page \pageref{eqn_pi}.\footnote{A famous equation.}
+\begin{equation}
+	V^\pi(s) = R(s, \pi(s)) + \gamma \sum_{s'} Pr(s'|s, \pi(s)) V^\pi(s') \forall s
+\end{equation}
 
-\section{Some Meaningless Drivel}
+an optimal policy is one that maximizes $V^\pi (s)$, so one where $V^{\pi *}(s) \ge V^{\pi}(s) \ \forall s, \pi$ \cite{pascal-mdp}, which means it will satisfy Bellaman's equation
 
-Velit dolor illum facilisis zzril ipsum, augue odio, accumsan ea augue molestie lobortis zzril laoreet ex ad, adipiscing nulla. Veniam dolore, vel te in dolor te, feugait dolore ex vel erat duis nostrud diam commodo ad eu in consequat esse in ut wisi. Consectetuer dolore feugiat wisi eum dignissim tincidunt vel, nostrud, at vulputate eum euismod, diam minim eros consequat lorem aliquam et ad. Feugait illum sit suscipit ut, tation in dolore euismod et iusto nulla amet wisi odio quis nisl feugiat adipiscing luptatum minim nisl, quis, erat, dolore. Elit quis sit dolor veniam blandit ullamcorper ex, vero nonummy, duis exerci delenit ullamcorper at feugiat ullamcorper, ullamcorper elit vulputate iusto esse luptatum duis autem. Nulla nulla qui, te praesent et at nisl ut in consequat blandit vel augue ut.
+\begin{equation}
+	V^{\pi *}(s) = \max_{a} R(s, a) + \gamma \sum_{s'} Pr(s'|s, \pi(s)) V^{\pi *}(s') \forall s
+\end{equation}
 
-Illum suscipit delenit commodo augue exerci magna veniam hendrerit dignissim duis ut feugait amet dolor dolor suscipit iriure veniam. Vel quis enim vulputate nulla facilisis volutpat vel in, suscipit facilisis dolore ut veniam, duis facilisi wisi nulla aliquip vero praesent nibh molestie consectetuer nulla. Wisi nibh exerci hendrerit consequat, nostrud lobortis ut praesent dignissim tincidunt enim eum accumsan. Lorem, nonummy duis iriure autem feugait praesent, duis, accumsan tation enim facilisi qui te dolore magna velit, iusto esse eu, zzril. Feugiat enim zzril, te vel illum, lobortis ut tation, elit luptatum ipsum, aliquam dolor sed. Ex consectetuer aliquip in, tation delenit dignissim accumsan consequat, vero, et ad eu velit ut duis ea ea odio.
 
-Vero qui, te praesent et at nisl ut in consequat blandit vel augue ut dolor illum facilisis zzril ipsum. Exerci odio, accumsan ea augue molestie lobortis zzril laoreet ex ad, adipiscing nulla, et dolore, vel te in dolor te, feugait dolore ex vel erat duis. Ut diam commodo ad eu in consequat esse in ut wisi aliquip dolore feugiat wisi eum dignissim tincidunt vel, nostrud. Ut vulputate eum euismod, diam minim eros consequat lorem aliquam et ad luptatum illum sit suscipit ut, tation in dolore euismod et iusto nulla. Iusto wisi odio quis nisl feugiat adipiscing luptatum minim. Illum, quis, erat, dolore qui quis sit dolor veniam blandit ullamcorper ex, vero nonummy, duis exerci delenit ullamcorper at feugiat. Et, ullamcorper elit vulputate iusto esse luptatum duis autem esse nulla qui.
+The question then becomes how do we find this policy $\pi$, especially if the probabilities or rewards are known only for some states? There are many approaches, but a simple one is value iteration. Value iteration which uses dynamic programming to optimize the values from the last time step and works backwards. Eventually, you arrive at the maximal value at each time step $t$ and can find the optimal policy $\pi$. Another approach involves using monte-carlo methods instead of dynamic programming and yet other approach use temporal-difference learning. These learning methods learn from raw experience without a model (much like Monte Carlo methods) but also update their estimates of the solution as they go, bootstrapping in a sense \cite{sutton-barto}.
 
-Praesent dolore et, delenit, laoreet dolore sed eros hendrerit consequat lobortis. Dolor nulla suscipit delenit commodo augue exerci magna veniam hendrerit dignissim duis ut feugait amet. Ad dolor suscipit iriure veniam blandit quis enim vulputate nulla facilisis volutpat vel in. Erat facilisis dolore ut veniam, duis facilisi wisi nulla aliquip vero praesent nibh molestie consectetuer nulla, iriure nibh exerci hendrerit. Vel, nostrud lobortis ut praesent dignissim tincidunt enim eum accumsan ea, nonummy duis. Ad autem feugait praesent, duis, accumsan tation enim facilisi qui te dolore magna velit, iusto esse eu, zzril vel enim zzril, te. Nisl illum, lobortis ut tation, elit luptatum ipsum, aliquam dolor sed minim consectetuer aliquip.
+One temporal learning algorithm that we will use is called ``Q-learning''. This algorithm seeks to find an approximator to the optimal quality function $Q*$ which maps between state, action pairs and their value \cite{sutton-barto}. Using our approximation $Q$, we can then select the action which will lead to the highest value for this state and our policy is done! Formally, Q-learning can be written as 
 
-Tation exerci delenit ullamcorper at feugiat ullamcorper, ullamcorper elit vulputate iusto esse luptatum duis autem esse nulla qui. Volutpat praesent et at nisl ut in consequat blandit vel augue ut dolor illum facilisis zzril ipsum, augue odio, accumsan ea augue molestie lobortis zzril laoreet. Ex duis, te velit illum odio, nisl qui consequat aliquip qui blandit hendrerit. Ea dolor nonummy ullamcorper nulla lorem tation laoreet in ea, ullamcorper vel consequat zzril delenit quis dignissim, vulputate tincidunt ut.
+\begin{equation}
+	Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha [r_{t+1} + \gamma \max_{a} Q(s_{t+1}, a) - Q(s_t, a_t)] \cite{sutton-barto}
+\end{equation}
 
-%======================================================================
-\chapter{Observations}
-%======================================================================
+Where $\alpha$ is the learning rate, used to stochastically update $Q$. This equation just means that $Q$ is stochastically updated as it goes, with the improved policy at each state-action pair. The policy doesn't affect how the updates are made, $Q$ is updated independent of the policy, but it does determine the order in which state-action pairs are visited and updated \cite{sutton-barto}.
 
-This would be a good place for some figures and tables.
+\section{Deep Reinforcement Learning}
+The fields of deep learning and reinforcement learning were somewhat distinct and separate until certain breakthroughs showed that combining them can lead to powerful algorithms. Deep reinforcement learning as done in \cite{atari-dqn} combines deep convolutional neural networks and q-learning to create a system that learns actions from raw image/video input. By saving the experiences of the agent in a dataset, called \textit{replay memory}, we can train the neural network on batches of inputs and values to allow for learning both the Q-function and weights of the neural network at the same time. Formally the algorithm is called \textit{deep Q-learning} and since using histories of different lengths can be difficult, we looks at fixed length representations of histories produced by a function $\phi$ \cite{atari-dqn}. 
 
-Some notes on figures and photographs\ldots
 
-\begin{itemize}
-\item A well-prepared PDF should be 
-  \begin{enumerate}
-    \item Of reasonable size, {\it i.e.} photos cropped and compressed.
-    \item Scalable, to allow enlargment of text and drawings. 
-  \end{enumerate} 
-\item Photos must be bit maps, and so are not scaleable by definition. TIFF and
-BMP are uncompressed formats, while JPEG is compressed. Most photos can be
-compressed without losing their illustrative value.
-\item Drawings that you make should be scalable vector graphics, \emph{not} 
-bit maps. Some scalable vector file formats are: EPS, SVG, PNG, WMF. These can
-all be converted into PNG or PDF, that pdflatex recognizes. Your drawing 
-package probably can export to one of these formats directly. Otherwise, a 
-common procedure is to print-to-file through a Postscript printer driver to 
-create a PS file, then convert that to EPS (encapsulated PS, which has a 
-bounding box to describe its exact size rather than a whole page). 
-Programs such as GSView (a Ghostscript GUI) can create both EPS and PDF from PS files.
-Appendix~\ref{AppendixA} shows how to generate properly sized Matlab plots and save them as PDF.
-\item It's important to crop your photos and draw your figures to the size that
-you want to appear in your thesis. Scaling photos with the 
-includegraphics command will cause loss of resolution. And scaling down 
-drawings may cause any text annotations to become too small.
-\end{itemize}
- 
-For more information on \LaTeX\, see the uWaterloo Skills for the Academic Workplace 
-course notes at \href{http://saw.uwaterloo.ca/latex}{saw.uwaterloo.ca/latex}. 
-\footnote{
-Note that while it is possible to include hyperlinks to external documents,
-it is not wise to do so, since anything you can't control may change over time. 
-It \emph{would} be appropriate and necessary to provide external links to 
-additional resources for a multimedia ``enhanced'' thesis. 
-But also note that if the \package{hyperref} package is not included, 
-as for the print-optimized option in this thesis template, any \cmmd{href} 
-commands in your logical document are no longer defined.
-A work-around employed by this thesis template is to define a dummy \cmmd{href} 
-command (which does nothing) in the preamble of the document, 
-before the \package{hyperref} package is included. 
-The dummy definition is then redifined by the
-\package{hyperref} package when it is included.
-}
+\begin{algorithm}
+\caption{Deep Q-Learning with Experience Replay \cite{atari-dqn}}
+\label{dqn-algorithm}
+\begin{algorithmic}
+\STATE Initialize replay memory $D$ to capacity $N$
+\STATE Initialize action-value function $Q$ with random weights
+\FOR{episode=1 \TO M} 
+\STATE Initialize sequence $s_1 = {x_1}$ and preprocessed $\phi_1 = \phi(s_1)$
+\FOR{t=1 \TO $T$}
+\STATE With probability $\eta$ select a random action $a_t$
+\STATE otherwise select $a_t = \max_{a} Q^*(\phi(s_t), a; \Theta)$
+\STATE Execute action $a_t$ in emulator and observe reward $r_t$ and image $x_{t+1}$ 
+\STATE Set $s_{t+1} = s_t, a_t, x_{t+1}$ and preprocess $\phi_{t+1} = \phi(s_{t+1})$
+\STATE Store transition $(\phi_t, a_t, r_t, \phi_{t+1})$ in $D$
+\STATE Sample random minibatch of transitions $(\phi_j, a_j, r_j, \phi_{j+1})$ from $D$
+\STATE Set $ y_j =
+	\begin{cases} 
+		r_j & \text{ for terminal } \phi_{j+1} \\
+		r_j + \gamma \max_{a'} Q(\phi_{j+1}, a'; \Theta) & \text{ for non-terminal } \phi_{j+1}
+	\end{cases}
+		$
+\STATE Perform a gradient descent step on $(y_j - Q(\phi_j, a_j; \Theta))^2$ according the Q-learning algorithm
+\ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
 
-The classic book by Leslie Lamport \cite{lamport.book}, author of \LaTeX , is worth a look too, and the many available add-on packages are described by 
-Goossens \textit{et al} \cite{goossens.book}. Some on-line documentation is linked
-to from \href{http://saw.uwaterloo.ca/latex}{saw.uwaterloo.ca/latex}.
+This algorithm was used for playing Atari video game based on the last four frames of a current state, but we will be applying it to visual object tracking in a similar manner.
 
-% The \appendix statement indicates the beginning of the appendices.
+
+\chapter{The Problem}
+\section{Visual Object Tracking}
+The challenge set forth is \textit{visual object tracking}, which is a research area pursued in many different ways. The core of this task is to keep track of an object in a video over the length of the video. Many different datasets and approaches exist but a popular one that has emerged is the Visual Object Tracking challenge, most recently done in coordination with International Conference on Computer Vision (ICCV2015). This challenge standardizes the visual tracking task as one that ``considers single-camera, single-target, model-free, causal trackers, applied to short-term tracking'' \cite{vot2015}. Breaking that down, single camera implies that the input is a continuous video taken from a single camera (though the camera can move). Single target means that there is only one object to be tracked in the video. Model-free means that ``the only supervised training example is provided by the bounding box in the first frame'' \cite{vot2015}, so the object can be anything and the input given is just a visual cue of where in the first frame the object is. Causal tracking means that the tracker can't use future frames or frames prior to re-initialization to detect the object. Finally, short-term implies that the tracker does not re-detect the object if the target is lost; drifting off of the target is considered failure.
+
+
+With all these restrictions put into place, we end up with a fairly narrow and precise goal. Also useful, is that the VOT challenge provides labelled training data and this work will be using the most recent VOT 2016 training data which consists of 60 videos each containing somewhere between 50 and 1000 frames with the average being somewhere in the 300s. Each video is labelled at every frame with a rectangular bounding box known as the \textit{ground truth}. Extra labels on the video are also provided as booleans for every frame: camera motion, illumination change, motion change, object size change. 
+
+\section{Related Work}
+
+Since the VOT challenge has been running for three years now, there have already been many approaches to this problem from combined approaches that used traditional statistical machine learning such as kernelized correlation features (KCF) \cite{kcf} to more recent approaches using neural networks \cite{mdnet}. VOT2015 saw many different approaches ultimately having neural networks be a part of many of the more successful entries \cite{vot2015}.
+
+One particularly interesting entry was the eventual contest-winner MDNet, which used a fairly standard convolutional network that reserved a final fully-connected layer for tracking specific to that video (referred to as the \textit{domain} as MDNet stands for``Multi-Domain Network'') \cite{mdnet}. The simple but effective convolutional layers already produced excellent results and combined with domain-specific final layers, made for a robust and accurate network. Since VOT2015 measured the networks by finding the expected average overlap between the ground truth bounding boxes and the output of the network, this robustness as well as accuracy managed to make up for he lack of speed in the network, crowning MDNet the winner \cite{vot2015}. These results are encouraging to our use of convolutional neural networks.
+
+
+\chapter{The Approach}
+\section{DQN for Visual Object Tracking}
+The novel approach suggested here is to use the same type of network as in \cite{atari-dqn} for the 
+
+
+\section{Implementation}
+\section{Results}
+
+\chapter{Future Work}
+
+\chapter{Conclusion}
+
 \appendix
 
 % Add a title page before the appendices and a line in the Table of Contents

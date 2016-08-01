@@ -1,28 +1,111 @@
-% Bibliography of key references for "LaTeX for Thesis and Large Documents"
-% For use with BibTeX
-
-@book{goossens.book,
-	author =	"Michel Goossens and Frank Mittelbach and 
-			 Alexander Samarin",
-	title =		"The \LaTeX\ Companion",
-	year = 		"1994",
-	publisher =	"Addison-Wesley",
-	address = 	"Reading, Massachusetts"
+@unpublished{deep-learning-book,
+    title={Deep Learning},
+    author={Ian Goodfellow Yoshua Bengio and Aaron Courville},
+    note={Book in preparation for MIT Press},
+    url={http://www.deeplearningbook.org},
+    year={2016}
 }
 
-@book{knuth.book,
-        author =        "Donald Knuth",
-        title =         "The \TeX book",
-        year =          "1986",
-        publisher =     "Addison-Wesley",
-        address =       "Reading, Massachusetts"
+@incollection{pascal-mdp,
+	author      = {Pascal Poupart},
+	title       = "An Introduction to Fully and Partially Observable Markov Decision Processes",
+	editor      = "Enrique Sucar, Eduardo Morales and Jesse Hoey",
+	booktitle   = "Decision Theory Models for Applications in Artificial Intelligence: Concepts and Solutions",
+	publisher   = "IGI Global",
+	year        = 2011,
+	pages       = "33-62",
+	chapter     = 3,
 }
 
-@book{lamport.book,
-	author =        "Leslie Lamport",
-	title =         "\LaTeX\ --- A Document Preparation System",
-        edition =       "Second",
-	year = 		"1994",
-	publisher = 	"Addison-Wesley",
-	address =       "Reading, Massachusetts"
+@article{deep-learning-article,
+	doi = {10.1038/nature14539},
+	url = {http://dx.doi.org/10.1038/nature14539},
+	year  = {2015},
+	month = {may},
+	publisher = {Nature Publishing Group},
+	volume = {521},
+	number = {7553},
+	pages = {436--444},
+	author = {Yann LeCun and Yoshua Bengio and Geoffrey Hinton},
+	title = {Deep learning},
+	journal = {Nature}
+}
+
+@unpublished{cs231n,
+	Author = {Karpathy, Andrej},
+	Institution = {Stanford University},
+	Howpublished = {University Lecture},
+	Year = {2016},
+	Title = {CS231n: Convolutional Neural Networks for Visual Recognition}
+}
+
+@article{resnet,
+  author    = {Kaiming He and
+               Xiangyu Zhang and
+               Shaoqing Ren and
+               Jian Sun},
+  title     = {Deep Residual Learning for Image Recognition},
+  journal   = {CoRR},
+  volume    = {abs/1512.03385},
+  year      = {2015},
+  url       = {http://arxiv.org/abs/1512.03385},
+  timestamp = {Wed, 30 Mar 2016 23:40:00 +0200},
+  biburl    = {http://dblp.uni-trier.de/rec/bib/journals/corr/HeZRS15},
+  bibsource = {dblp computer science bibliography, http://dblp.org}
+}
+
+@article{ILSVRC15,
+	Author = {Olga Russakovsky and Jia Deng and Hao Su and Jonathan Krause and Sanjeev Satheesh and Sean Ma and Zhiheng Huang and Andrej Karpathy and Aditya Khosla and Michael Bernstein and Alexander C. Berg and Li Fei-Fei},
+	Title = {{ImageNet Large Scale Visual Recognition Challenge}},
+	Year = {2015},
+	journal   = {International Journal of Computer Vision (IJCV)},
+	doi = {10.1007/s11263-015-0816-y},
+	volume={115},
+	number={3},
+	pages={211-252}
+}
+
+@book{sutton-barto,
+ author = {Sutton, Richard S. and Barto, Andrew G.},
+ title = {Introduction to Reinforcement Learning},
+ year = {1998},
+ isbn = {0262193981},
+ edition = {1st},
+ publisher = {MIT Press},
+ address = {Cambridge, MA, USA},
+} 
+
+@article{atari-dqn,
+  title={Playing atari with deep reinforcement learning},
+  author={Mnih, Volodymyr and Kavukcuoglu, Koray and Silver, David and Graves, Alex and Antonoglou, Ioannis and Wierstra, Daan and Riedmiller, Martin},
+  journal={arXiv preprint arXiv:1312.5602},
+  year={2013}
+}
+
+@inproceedings{vot2015,
+	abstract = {The Visual Object Tracking challenge 2015, VOT2015, aims at comparing short-term single-object visual trackers that do not apply pre-learned models of object appearance. Results of 62 trackers are presented. The number of tested trackers makes VOT 2015 the largest benchmark on short-term tracking to date. For each participating tracker, a short description is provided in the appendix. Features of the VOT2015 challenge that go beyond its VOT2014 predecessor are: (i) a new VOT2015 dataset twice as large as in VOT2014 with full annotation of targets by rotated bounding boxes and per-frame attribute, (ii) extensions of the VOT2014 evaluation methodology by introduction of a new performance measure. The dataset, the evaluation kit as well as the results are publicly available at the challenge website.},
+	author = {Kristan, Matej and Matas, Jiri and Leonardis, Ale{\v{s}} and Felsberg, Michael and {\v{C}}ehovin, Luka and Fernandez, Gustavo and Vojir, Tomas and H{\"{a}}ger, Gustav and Nebehay, Georg and Pflugfelder, Roman and Gupta, Abhinav and Bibi, Adel and Luke{\v{z}}i{\v{c}}, Alan and Garcia-Martin, Alvaro and Saffari, Amir and Petrosino, Alfredo and Montero, Andres Solis and Varfolomieiev, Anton and Baskurt, Atilla and Zhao, Baojun and Ghanem, Bernard and Martinez, Brais and Lee, ByeongJu and Han, Bohyung and Wang, Chaohui and Garcia, Christophe and Zhang, Chunyuan and Schmid, Cordelia and Tao, Dacheng and Kim, Daijin and Huang, Dafei and Prokhorov, Danil and Du, Dawei and Yeung, Dit-Yan and Ribeiro, Eraldo and Khan, Fahad Shahbaz and Porikli, Fatih and Bunyak, Filiz and Zhu, Gao and Seetharaman, Guna and Kieritz, Hilke and Yau, Hing Tuen and Li, Hongdong and Qi, Honggang and Bischof, Horst and Possegger, Horst and Lee, Hyemin and Nam, Hyeonseob and Bogun, Ivan and Jeong, Jae-chan and Cho, Jae-il and Lee, Jae-Yeong and Zhu, Jianke and Shi, Jianping and Li, Jiatong and Jia, Jiaya and Feng, Jiayi and Gao, Jin and Choi, Jin Young and Kim, Ji-Wan and Lang, Jochen and Martinez, Jose M and Choi, Jongwon and Xing, Junliang and Xue, Kai and Palaniappan, Kannappan and Lebeda, Karel and Alahari, Karteek and Gao, Ke and Yun, Kimin and Wong, Kin Hong and Luo, Lei and Ma, Liang and Ke, Lipeng and Wen, Longyin and Bertinetto, Luca and Pootschi, Mahdieh and Maresca, Mario and Danelljan, Martin and Wen, Mei and Zhang, Mengdan and Arens, Michael and Valstar, Michel and Tang, Ming and Chang, Ming-Ching and Khan, Muhammad Haris and Fan, Nana and Wang, Naiyan and Miksik, Ondrej and Torr, Philip H S and Wang, Qiang and Martin-Nieto, Rafael and Pelapur, Rengarajan and Bowden, Richard and Laganiere, Robert and Moujtahid, Salma and Hare, Sam and Hadfield, Simon and Lyu, Siwei and Li, Siyi and Zhu, Song-Chun and Becker, Stefan and Duffner, Stefan and Hicks, Stephen L and Golodetz, Stuart and Choi, Sunglok and Wu, Tianfu and Mauthner, Thomas and Pridmore, Tony and Hu, Weiming and H{\"{u}}bner, Wolfgang and Wang, Xiaomeng and Li, Xin and Shi, Xinchu and Zhao, Xu and Mei, Xue and Shizeng, Yao and Hua, Yang and Li, Yang and Lu, Yang and Li, Yuezun and Chen, Zhaoyun and Huang, Zehua and Chen, Zhe and Zhang, Zhe and He, Zhenyu},
+	booktitle = {Visual Object Tracking Workshop 2015 at ICCV2015},
+	month = {dec},
+	title = {{The Visual Object Tracking VOT2015 challenge results}},
+	year = {2015}
+}
+
+@InProceedings{mdnet,
+	author = {Nam, Hyeonseob and Han, Bohyung},
+	title = {Learning Multi-Domain Convolutional Neural Networks for Visual Tracking},
+	booktitle = {The IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+	month = {June},
+	year = {2016}
+}
+
+@article{kcf,
+  title={High-speed tracking with kernelized correlation filters},
+  author={Henriques, Jo{\~a}o F and Caseiro, Rui and Martins, Pedro and Batista, Jorge},
+  journal={IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  volume={37},
+  number={3},
+  pages={583--596},
+  year={2015},
+  publisher={IEEE}
 }

@@ -331,21 +331,21 @@ The implementation is done in Tensorflow for scalability and future-proofing rea
 
 Sadly, there are no good deep Q-learning implementation available online. All implementations tend to be very application specific (e.g. DQN for Atari in lua for \cite{atari-dqn}) but nothing that can interface well and in a modular fashion. The main issue is that the algorithm itself is very new and most professional implementations that would be tied to Tensorflow are most likely exclusively available within private companies (Google, Deepmind\dots). This means that I have had to put together my own implementation of a deep Q network from various sources online.
 
-\section{Drawbacks}
+\section{Possible Drawbacks}
 One major criticism that can be used is that reinforcement learning is overkill for this exact problem. Reinforcement learning excels at learning from rewards that are not directly related to each individual action (e.g. in pong, the paddle movement only matter if you are hitting the ball, otherwise the action can be meaningless). In this problem, our ``reward'' is actually a measure of error between our estimate and the ground truth bounding box, so these two are directly related. But reinforcement learning may still be a good approach for this problem for a different reason, limited training data. Even with a large international contest such as VOT, the training data set only contains 60 videos \cite{vot2015}. This is because labelling each frame is a very expensive process that can be difficult even for humans to do (and at the very least it takes a long time!). A possible future approach to the labelling is to bootstrap better labels from weaker ones, possibly by using indirect signals e.g. having a human only look at the last frame and label true/false whether the bounding box estimate is a good estimate. Other approaches such as pure convolutional nets would be unable to learn from just a boolean yes/no as effectively as reinforcement learning could. In this way, though the approach may be too much for the current situation it has good possible applications in other places.
 
-\section{Results}
-
-\chapter{Future Work}
+\chapter{Results}
+\section{Difficulties}
+Due to difficulties with the implementation of the DQN, being fed in a video instead of a game, and very new libraries being used, no usable results were achieved in this time frame. The plan going forward is to switch to a Keras implementation on top of Tensorflow \cite{keras} (instead of Tensorflow-Slim) and using a fairly mature library for reinforcement learning, keras-rl \cite{keras-rl}. Another change in implementation will come from building off of existing reinforcement learning training libraries, specifically the OpenAI gym library \cite{openai-gym}, which is widely used now and already works with the keras-rl library. I would need to create a video input ``environment'' that would extend the normal environment (used mostly for games e.g. pong) providing the reward function (IoU of the bounding boxes), action space (moving/changing the bounding box), and state space (all the frames of the video sequentially). I believe that doing this implementation and treating each new video as a new run of a game would allow for successful testing of this idea.
 Though we can consider MDNet, VOT2015's winner, as a very strong baseline, it is now one year old. The current VOT competition is running and it would be interesting to see the new submissions and how the DQN approach compares to them. Since the results are not coming out until October, the approach should be compared to those papers at that time and perhaps modifications can be made if there are new ideas that mesh well.
 
+\section{Future Work}
 Other future work that would be interesting is replacing the concatenated four-frame input (as per \cite{atari-dqn}) with the output of a recurrent neural net that has been fed multiple frames. Visual object tracking often runs into the problem of obscured targets where the object being tracked is briefly out of view (either going outside of the bounds, or being covered somehow) and regular neural networks may have trouble dealing with such input. Instead there have been good results showing that recurrent neural nets have a concept of continuity thanks to their recurrent connections, and in similar DQN situations (pong) can extrapolate from obscured targets and input \cite{drqn}. It would be interesting to add a recurrent layer to the network and see possible results.
 
-\chapter{Conclusion}
 
-\appendix
+\section{Conclusion}
+Visual object tracking was attempted using deep reinforcement learning (specifically deep q networks) and many different approaches were investigated. A model for how to structure the input, the neural network, and the q function were put forth but due to issues in implementation and time constraints, no usable results were obtained. I will continue to work on this problem and test the architecture agains the VOT2016 dataset, hoping to compare my results to those of the VOT2016 winners as revealed in October.
 
-% Add a title page before the appendices and a line in the Table of Contents
 
 \bibliographystyle{plain}
 % This specifies the location of the file containing the bibliographic information.  

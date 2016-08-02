@@ -316,57 +316,37 @@ One particularly interesting entry was the eventual contest-winner MDNet, which 
 
 \chapter{The Approach}
 \section{DQN for Visual Object Tracking}
-The novel approach suggested here is to use the same type of network as in \cite{atari-dqn} for the 
+The novel approach suggested here is to use the same type of network as in \cite{atari-dqn} for the purposes of visual object tracking on the VOT2016 dataset. The setup will be similar to the DQN proposed only we don't have any need for experience replay as our dataset is not a game that must be played through online but a set of videos from which we can sample. 
 
+We will model the bounding box as our state and actions will be modifications to the bounding box. Possible actions are then, translation in x, translation in y, changing the size of the bounding box in x, changing the size of the bounding box in y (we will not count rotations as our bounding boxes should always we upright). In this way there are 8 possible actions (left, right, up, down, and shrink/grow for each direction).
+
+Modelling the reward is tricky but we will use a common bounding box measure over intersect over union (IoU) to find the reward. This is the measure of how close our estimated bounding box is to the ground truth. We measure the area in the intersection of the two bounding boxes and divide it by the area of the union of the two bounding boxes. In the ideal case, where our box matches perfectly with the ground truth, we find that IoU = 1. In the case that we lose complete track of our ground truth, we have IoU = 0. In this way, we make the reward function equal to the IoU, hoping that our estimate bounding box will cover as much as possible of the ground truth and as little else as possible.
+
+This situation is a little bit interesting in that we really don't need a $\gamma$ because the ground truth labels are available at every time step and every time step is just as important for the task of tracking. We can still experiment, though, with using a different horizon and different sampling techniques (e.g. taking a 10 frame clip regardless of which video). The input though, is similar to the DQN in \cite{atari-dqn} as it uses a concatenation of four frames (to get a sense of motion) instead of just using a single frame.
+
+Intuitively, it can be thought of as moving the bounding box at each time step (frame) to be in line with the ground truth bounding box. Theoretically, this approach should win over other approaches that seek to redraw the bounding box from scratch at every frame, since we would require much fewer bits of information per each new frame and would literally be ``tracking'' the visual cues over time.
 
 \section{Implementation}
+The implementation is done in Tensorflow for scalability and future-proofing reasons. Input videos (series of frames) are converted into tfrecords files and fed into the network using parallelized input queues. Batches can be shuffled and split among many different devices, and GPU support is available for the network. Tensorflow can also be a bit verbose, so a high-level library, Tensorflow-Slim, is used to make networks as well as other code more readable. This has the added benefit of automatically integrating into Tensorflow's visualization library Tensorboard, which allows for real-time visualization of various metrics and variables during training and testing. As well, due to the parallizable nature of Tensorflow-Slim, both training and evaluation can happen simulataneously allowing for faster training and a better understanding of overfitting in the network (also possible to view output activations to check for overfitting).
+
+Sadly, there are no good deep Q-learning implementation available online. All implementations tend to be very application specific (e.g. DQN for Atari in lua for \cite{atari-dqn}) but nothing that can interface well and in a modular fashion. The main issue is that the algorithm itself is very new and most professional implementations that would be tied to Tensorflow are most likely exclusively available within private companies (Google, Deepmind\dots). This means that I have had to put together my own implementation of a deep Q network from various sources online.
+
+\section{Drawbacks}
+One major criticism that can be used is that reinforcement learning is overkill for this exact problem. Reinforcement learning excels at learning from rewards that are not directly related to each individual action (e.g. in pong, the paddle movement only matter if you are hitting the ball, otherwise the action can be meaningless). In this problem, our ``reward'' is actually a measure of error between our estimate and the ground truth bounding box, so these two are directly related. But reinforcement learning may still be a good approach for this problem for a different reason, limited training data. Even with a large international contest such as VOT, the training data set only contains 60 videos \cite{vot2015}. This is because labelling each frame is a very expensive process that can be difficult even for humans to do (and at the very least it takes a long time!). A possible future approach to the labelling is to bootstrap better labels from weaker ones, possibly by using indirect signals e.g. having a human only look at the last frame and label true/false whether the bounding box estimate is a good estimate. Other approaches such as pure convolutional nets would be unable to learn from just a boolean yes/no as effectively as reinforcement learning could. In this way, though the approach may be too much for the current situation it has good possible applications in other places.
+
 \section{Results}
 
 \chapter{Future Work}
+Though we can consider MDNet, VOT2015's winner, as a very strong baseline, it is now one year old. The current VOT competition is running and it would be interesting to see the new submissions and how the DQN approach compares to them. Since the results are not coming out until October, the approach should be compared to those papers at that time and perhaps modifications can be made if there are new ideas that mesh well.
+
+Other future work that would be interesting is replacing the concatenated four-frame input (as per \cite{atari-dqn}) with the output of a recurrent neural net that has been fed multiple frames. Visual object tracking often runs into the problem of obscured targets where the object being tracked is briefly out of view (either going outside of the bounds, or being covered somehow) and regular neural networks may have trouble dealing with such input. Instead there have been good results showing that recurrent neural nets have a concept of continuity thanks to their recurrent connections, and in similar DQN situations (pong) can extrapolate from obscured targets and input \cite{drqn}. It would be interesting to add a recurrent layer to the network and see possible results.
 
 \chapter{Conclusion}
 
 \appendix
 
 % Add a title page before the appendices and a line in the Table of Contents
-\chapter*{APPENDICES}
-\addcontentsline{toc}{chapter}{APPENDICES}
-%======================================================================
-\chapter[PDF Plots From Matlab]{Matlab Code for Making a PDF Plot}
-\label{AppendixA}
-% Tip 4: Example of how to get a shorter chapter title for the Table of Contents 
-%======================================================================
-\section{Using the GUI}
-Properties of Matab plots can be adjusted from the plot window via a graphical interface. Under the Desktop menu in the Figure window, select the Property Editor. You may also want to check the Plot Browser and Figure Palette for more tools. To adjust properties of the axes, look under the Edit menu and select Axes Properties.
 
-To set the figure size and to save as PDF or other file formats, click the Export Setup button in the figure Property Editor.
-
-\section{From the Command Line} 
-All figure properties can also be manipulated from the command line. Here's an example: 
-\begin{verbatim}
-x=[0:0.1:pi];
-hold on % Plot multiple traces on one figure
-plot(x,sin(x))
-plot(x,cos(x),'--r')
-plot(x,tan(x),'.-g')
-title('Some Trig Functions Over 0 to \pi') % Note LaTeX markup!
-legend('{\it sin}(x)','{\it cos}(x)','{\it tan}(x)')
-hold off
-set(gca,'Ylim',[-3 3]) % Adjust Y limits of "current axes"
-set(gcf,'Units','inches') % Set figure size units of "current figure"
-set(gcf,'Position',[0,0,6,4]) % Set figure width (6 in.) and height (4 in.)
-cd n:\thesis\plots % Select where to save
-print -dpdf plot.pdf % Save as PDF
-\end{verbatim}
-
-%----------------------------------------------------------------------
-% END MATERIAL
-%----------------------------------------------------------------------
-
-% B I B L I O G R A P H Y
-% -----------------------
-
-% The following statement selects the style to use for references.  It controls the sort order of the entries in the bibliography and also the formatting for the in-text labels.
 \bibliographystyle{plain}
 % This specifies the location of the file containing the bibliographic information.  
 % It assumes you're using BibTeX (if not, why not?).
